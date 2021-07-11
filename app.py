@@ -88,10 +88,8 @@ def predict():
                 elif inp == "لا":
                     diagnosed[previous] = False
                     visited[previous] = True
-                chatIteration = chatIteration + 1     
 
             if(visited[previous]==False):
-                chatIteration = chatIteration + 1     
                 ##########
                 last = " "
                 last2 = " "
@@ -350,7 +348,7 @@ def predict():
                         i+=1
                     #########
                 # txtProcess(inp, symptomKeywordsDictionary, visited, diagnosed)
-
+            chatIteration = chatIteration + 1     
             for i in symptomKeywordsDictionary.values():
                 if visited[i] == False:    
                     previous = i
