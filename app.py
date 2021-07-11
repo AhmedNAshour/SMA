@@ -47,12 +47,6 @@ for i in range(sh.ncols):
     for r in range(1, sh.nrows):  
         symptomKeywordsDictionary.update({sh.cell(r, i).value: value})
 
-visited = {}
-diagnosed = {}
-
-for i in symptomKeywordsDictionary.values():
-    visited[i] = False
-    diagnosed[i] = False
 
 
 @app.route("/", methods=['GET'])
@@ -69,11 +63,10 @@ def predict():
             chatIteration = json[0]['chatIteration']
             previous = json[0]['previous']
             temp = json[0]['values']
-
+            visited = json[0]['visited']
+            diagnosed = json[0]['diagnosed']
             still = False
             inp = temp
-            global diagnosed
-            global visited
             global symptomKeywordsDictionary
             cleanedText = nltk.word_tokenize(inp)
             print('previous ' + previous, flush=True)
@@ -351,16 +344,16 @@ def predict():
             for i in symptomKeywordsDictionary.values():
                 if visited[i] == False:    
                     previous = i
-                    return jsonify({'prediction': str("هل تشعر ب" + i) , 'chatIteration': chatIteration , 'previous': previous})
+                    return jsonify({'prediction': str("هل تشعر ب" + i) , 'chatIteration': chatIteration , 'previous': previous , 'visited': visited , 'diagnosed': diagnosed})
 
             prediction = chef.predict(lr, [diagnosed['حمي'], diagnosed['إرهاق'], diagnosed['سعال'], diagnosed['ضيق تنفس'], diagnosed['احتقان حلق'], diagnosed['آلام'], diagnosed['احتقان انف'], diagnosed['سيلان انف'], diagnosed['اسهال'],diagnosed['فقدان حاسة الشم و التذوق']])
 
             if prediction == "yes":
                 # diagnosed.clear()
                 # visited.clear()
-                return jsonify({'prediction': "تم تشخيصك بفيروس كورونا المستجد." , 'dict': diagnosed , 'chatIteration': chatIteration , 'previous': previous})
+                return jsonify({'prediction': "تم تشخيصك بفيروس كورونا المستجد." , 'dict': diagnosed , 'chatIteration': chatIteration , 'previous': previous, 'visited': visited , 'diagnosed': diagnosed})
             else:
-                return jsonify({'prediction': "لم يتم تشخيصك بفيروس كورونا المستجد." , 'dict': diagnosed, 'chatIteration': chatIteration , 'previous': previous})
+                return jsonify({'prediction': "لم يتم تشخيصك بفيروس كورونا المستجد." , 'dict': diagnosed, 'chatIteration': chatIteration , 'previous': previous, 'visited': visited , 'diagnosed': diagnosed})
 
             print("here:", prediction , flush=True)
         except:
@@ -393,12 +386,6 @@ def updatePrediction():
 @app.route('/resetData', methods=['POST'])
 def resetData():
     try:
-        global diagnosed
-        global visited
-        global symptomKeywordsDictionary
-        for i in symptomKeywordsDictionary.values():
-            visited[i] = False
-            diagnosed[i] = False
         return jsonify({'done': "yes"})
     except:
         return jsonify({'trace': 'error'})
