@@ -316,7 +316,7 @@ def predict():
                             rightWord=""
                             finalWord = ""
                             for x in symptomKeywordsDictionary.keys():
-                                d = nltk.edit_distance(word, x)
+                                d = nltk.edit_distance(wrongWord, x)
                                 if d < distance:
                                     distance = d
                                     rightWord = x
