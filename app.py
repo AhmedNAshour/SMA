@@ -385,14 +385,14 @@ def updatePrediction():
             print(temp, flush=True)
 
             #df = pd.read_csv("Cleaned-Data.csv")
-            myCsvRow = [1,1,1,1,1,1,1,1,1,1,'yes']
+            #myCsvRow = [1,1,1,1,1,1,1,1,1,1,'yes']
            # dframe = pd.DataFrame(lst)  
            # listt=[df,DataFrame]
            # appended_df = pd.concat(listt)
           #  appended_df.to_csv("Cleaned-Data.csv", index=False)
-            with open('Cleaned-Data.csv','a') as fd:
-            fd.write(myCsvRow)
-            
+            #with open('Cleaned-Data.csv','a') as fd:
+            #fd.write(myCsvRow)
+
 
             
             #prediction = chef.predict(lr, temp)
