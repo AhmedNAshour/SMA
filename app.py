@@ -75,7 +75,7 @@ def predict():
             global visited
             global previous
             global symptomKeywordsDictionary
-            cleanedText = inp.split(' ')
+            cleanedText = inp.split()
             if chatIteration > 0:
                 if inp == "نعم":
                     diagnosed[previous] = True
