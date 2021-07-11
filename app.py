@@ -15,6 +15,7 @@ from nltk.stem.isri import ISRIStemmer
 st = ISRIStemmer()
 import xlrd
 import nltk
+nltk.download('punkt')
 import pyarabic.araby as ar
 from nltk.stem.lancaster import LancasterStemmer
 stemmer = LancasterStemmer()
