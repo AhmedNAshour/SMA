@@ -357,7 +357,7 @@ def predict():
                     if understandable == True:
                         return jsonify({'prediction': str("هل تشعر ب" + i) , 'chatIteration': chatIteration , 'previous': previous , 'visited': visited , 'diagnosed': diagnosed})
                     else:
-                        return jsonify({'prediction': str("عفوا, أنا لم أفهم ماذا تقصد")+"\n"+str("هل تشعر ب" + i) , 'chatIteration': chatIteration , 'previous': previous , 'visited': visited , 'diagnosed': diagnosed})
+                        return jsonify({'prediction': str("عفوا, أنا لم أفهم ماذا تقصد"+" ,"+"هل تشعر ب" + i) , 'chatIteration': chatIteration , 'previous': previous , 'visited': visited , 'diagnosed': diagnosed})
 
             prediction = chef.predict(lr, [diagnosed['حمي'], diagnosed['إرهاق'], diagnosed['سعال'], diagnosed['ضيق تنفس'], diagnosed['احتقان حلق'], diagnosed['آلام'], diagnosed['احتقان انف'], diagnosed['سيلان انف'], diagnosed['اسهال'],diagnosed['فقدان حاسة الشم و التذوق']])
 
