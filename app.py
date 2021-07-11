@@ -55,6 +55,7 @@ def hello():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    understandable = False
     lr = chef.load_model("model.pkl")
     if lr:
         try:
@@ -71,14 +72,17 @@ def predict():
             cleanedText = nltk.word_tokenize(inp)
             print('previous ' + previous, flush=True)
             print(chatIteration, flush=True)
+
             if chatIteration > 0:
                 print('more than 0', flush=True)
                 if inp == "نعم":
                     diagnosed[previous] = True
                     visited[previous] = True
+                    understandable = True
                     print(visited, flush=True)
                 elif inp == "لا":
                     diagnosed[previous] = False
+                    understandable = True
                     visited[previous] = True
 
             if(visited[previous]==False):
@@ -237,6 +241,7 @@ def predict():
                                 i+=1
                                 continue
                             visited[symptomKeywordsDictionary[item]] = True
+                            understandable = True
                             if i >= 1:
                                 last = splitted[i-1]
                                 if i > 1:
@@ -262,6 +267,8 @@ def predict():
                                     i += 2
                                     continue
                                 visited[symptomKeywordsDictionary[temp]] = True
+                                understandable = True
+
 
                                 if i >= 1:
                                     last = splitted[i - 1]
@@ -289,6 +296,8 @@ def predict():
                                     continue
 
                                 visited[symptomKeywordsDictionary[temp2]] = True
+                                understandable = True
+
                                 if i >= 1:
                                     last = splitted[i - 1]
                                     if i > 1:
@@ -314,6 +323,7 @@ def predict():
 
                             if distance < 2 :
                                 visited[symptomKeywordsDictionary[rightWord]] = True
+                                understandable = True
                                 finalWord = rightWord
                             else:
                                 finalWord = 'x'
@@ -344,7 +354,10 @@ def predict():
             for i in symptomKeywordsDictionary.values():
                 if visited[i] == False:    
                     previous = i
-                    return jsonify({'prediction': str("هل تشعر ب" + i) , 'chatIteration': chatIteration , 'previous': previous , 'visited': visited , 'diagnosed': diagnosed})
+                    if understandable == True:
+                        return jsonify({'prediction': str("هل تشعر ب" + i) , 'chatIteration': chatIteration , 'previous': previous , 'visited': visited , 'diagnosed': diagnosed})
+                    else:
+                        return jsonify({'prediction': str("عفوا, أنا لم أفهم ماذا تقصد")+"\n"+str("هل تشعر ب" + i) , 'chatIteration': chatIteration , 'previous': previous , 'visited': visited , 'diagnosed': diagnosed})
 
             prediction = chef.predict(lr, [diagnosed['حمي'], diagnosed['إرهاق'], diagnosed['سعال'], diagnosed['ضيق تنفس'], diagnosed['احتقان حلق'], diagnosed['آلام'], diagnosed['احتقان انف'], diagnosed['سيلان انف'], diagnosed['اسهال'],diagnosed['فقدان حاسة الشم و التذوق']])
 
