@@ -383,14 +383,23 @@ def updatePrediction():
             # model_columns = chef.load("model_cols.pkl")
             temp = json[0]['values']
             print(temp, flush=True)
-            
-            prediction = chef.predict(lr, temp)
-            if prediction == "yes":
-                return jsonify({'prediction': "yes"})
-            else:
-                return jsonify({'prediction': "no"})
 
-            print("here:", prediction , flush=True)
+            df = pd.read_csv("Cleaned-Data.csv")
+            lst = [1,1,1,1,1,1,1,1,1,1,'yes']
+            dframe = pd.DataFrame(lst)  
+            listt=[df,lst]
+            appended_df = pd.concat(listt)
+            appended_df.to_csv("Cleaned-Data.csv", index=False)
+
+
+            
+            #prediction = chef.predict(lr, temp)
+            #if prediction == "yes":
+                #return jsonify({'prediction': "yes"})
+            #else:
+                #return jsonify({'prediction': "no"})
+
+            #print("here:", prediction , flush=True)
         except:
             return jsonify({'trace': 'error'})
     else:
