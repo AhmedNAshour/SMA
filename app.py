@@ -15,7 +15,6 @@ from nltk.stem.isri import ISRIStemmer
 st = ISRIStemmer()
 import xlrd
 import nltk
-nltk.data.path.append('./nltk_data/')
 import pyarabic.araby as ar
 from nltk.stem.lancaster import LancasterStemmer
 stemmer = LancasterStemmer()
@@ -76,9 +75,8 @@ def predict():
             global visited
             global previous
             global symptomKeywordsDictionary
-            cleanedText = nltk.word_tokenize(inp)
+            cleanedText = inp.split(' ')
             if chatIteration > 0:
-                return jsonify({'trace': str(previous)})
                 if inp == "نعم":
                     diagnosed[previous] = True
                     visited[previous] = True
