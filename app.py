@@ -56,7 +56,7 @@ for i in symptomKeywordsDictionary.values():
     diagnosed[i] = False
 
 
-@app.route("/hey", methods=['GET'])
+@app.route("/", methods=['GET'])
 def hello():
     return "hey"
 
@@ -83,263 +83,266 @@ def predict():
                 elif inp == "لا":
                     diagnosed[previous] = False
                     visited[previous] = True
-            chatIteration = chatIteration + 1     
-            ##########
-            last = " "
-            last2 = " "
-            wrongWord=""
-            ####
-            def remove_prefix_al(text):
-                if text.startswith('ال'):
-                    return text[2:]
-                return text
-            
-            i=0
-            while i in range(len(cleanedText)):                             #----------
-                if cleanedText[i] in stopWords:
-                    del cleanedText[i]
-                    i-=1
-                i+=1
+                chatIteration = chatIteration + 1     
 
-                #Light Stemming                                                         #####################################
-                j=0
-                for text in cleanedText:
-                    # Rule1
-                    if len(text) == 5 and text[1] != 'و' and text[3] == 'ئ' and text[2] == 'ا':
-                        if text[4] != 'ي' or text[4] != 'ه':
+            if(visited[previous]==False):
+                chatIteration = chatIteration + 1     
+                ##########
+                last = " "
+                last2 = " "
+                wrongWord=""
+                ####
+                def remove_prefix_al(text):
+                    if text.startswith('ال'):
+                        return text[2:]
+                    return text
+                
+                i=0
+                while i in range(len(cleanedText)):                             #----------
+                    if cleanedText[i] in stopWords:
+                        del cleanedText[i]
+                        i-=1
+                    i+=1
+
+                    #Light Stemming                                                         #####################################
+                    j=0
+                    for text in cleanedText:
+                        # Rule1
+                        if len(text) == 5 and text[1] != 'و' and text[3] == 'ئ' and text[2] == 'ا':
+                            if text[4] != 'ي' or text[4] != 'ه':
+                                textL = list(text)
+                                textL[2] = "ي"
+                                textL.pop(3)
+                                textL.append('ة')
+                                new_text = ""
+                                for x in textL:
+                                    new_text += x
+                                if new_text in symptomKeywordsDictionary.keys():
+                                    cleanedText[j] = new_text
+                                new_text = new_text[-1]
+                                if new_text in symptomKeywordsDictionary.keys():
+                                    cleanedText[j]=new_text
+
+                        # Rule 2
+                        elif len(text) == 5 and text[1] == 'و' and text[3] == 'ئ' and text[2] == 'ا':
+                            if text[4] != 'ي' or text[4] != 'ه':
+                                textL = list(text)
+                                textL.pop(1)
+                                textL.append('ة')
+                                new_text = ""
+                                for x in textL:
+                                    new_text += x
+                                if new_text in symptomKeywordsDictionary.keys():
+                                    cleanedText[j] = new_text
+                                new_text = new_text[-1]
+                                if new_text in symptomKeywordsDictionary.keys():
+                                    cleanedText[j] = new_text
+
+                        # Rule 5
+                        elif len(text) == 4 and text[2] == 'و' and text[-1] != 'ه':
                             textL = list(text)
-                            textL[2] = "ي"
+                            textL.pop(2)
+                            new_text = ""
+
+                            for x in textL:
+                                new_text += x
+                            if new_text in symptomKeywordsDictionary.keys():
+                                cleanedText[j] = new_text
+
+                        # Rule 6
+                        elif len(text) == 5 and text[2] == 'ا':
+                            textL = list(text)
+                            textL.pop(2)
+                            new_text = ""
+                            for x in textL:
+                                new_text += x
+                            if new_text in symptomKeywordsDictionary.keys():
+                                cleanedText[j] = new_text
+
+                        # Rule 7
+                        elif len(text) == 4 and text[0] == 'ا':
+                            textL = list(text)
+                            textL.pop(0)
+                            new_text = ""
+                            for x in textL:
+                                new_text += x
+                            if new_text in symptomKeywordsDictionary.keys():
+                                cleanedText[j] = new_text
+
+                        # Rule 8
+                        elif len(text) == 5 and text[0] == 'ا' and text[4] == 'ة':
+                            textL = list(text)
+                            textL.pop(0)
                             textL.pop(3)
-                            textL.append('ة')
+
                             new_text = ""
+                            i = 0
                             for x in textL:
+                                if i == 2:
+                                    new_text += 'ا'
                                 new_text += x
+                                i += 1
                             if new_text in symptomKeywordsDictionary.keys():
                                 cleanedText[j] = new_text
-                            new_text = new_text[-1]
-                            if new_text in symptomKeywordsDictionary.keys():
-                                cleanedText[j]=new_text
 
-                    # Rule 2
-                    elif len(text) == 5 and text[1] == 'و' and text[3] == 'ئ' and text[2] == 'ا':
-                        if text[4] != 'ي' or text[4] != 'ه':
+                        # Rule 9
+                        elif len(text) == 5 and text[0] == 'ا' and text[3] == 'ا' and text[1] != 'ي':
                             textL = list(text)
-                            textL.pop(1)
-                            textL.append('ة')
+                            textL.pop(0)
+                            textL.pop(2)
+
                             new_text = ""
                             for x in textL:
                                 new_text += x
                             if new_text in symptomKeywordsDictionary.keys():
                                 cleanedText[j] = new_text
-                            new_text = new_text[-1]
-                            if new_text in symptomKeywordsDictionary.keys():
-                                cleanedText[j] = new_text
 
-                    # Rule 5
-                    elif len(text) == 4 and text[2] == 'و' and text[-1] != 'ه':
-                        textL = list(text)
-                        textL.pop(2)
-                        new_text = ""
+                        # Rule 3
+                        elif len(text) > 3:
+                            textL = list(text)
+                            x = len(textL)
+                            if textL[x - 1] == 'ا' and textL[x - 2] == 'ي' and textL[x - 3] == 'ا':
+                                textL.pop(x - 1)
+                                textL.pop(x - 2)
+                                textL.pop(x - 3)
+                                textL.append('ي')
+                                textL.append('ة')
+                                new_text = ""
+                                for x in textL:
+                                    new_text += x
+                                if new_text in symptomKeywordsDictionary.keys():
+                                    cleanedText[j] = new_text
+                        j+=1
 
-                        for x in textL:
-                            new_text += x
-                        if new_text in symptomKeywordsDictionary.keys():
-                            cleanedText[j] = new_text
+                for i, item in enumerate (cleanedText):
+                    cleanedText[i]=remove_prefix_al(cleanedText[i])
+                    cleanedText[i] = cleanedText[i].replace("أ","ا")
+                    cleanedText[i] = cleanedText[i].replace("إ","ا")
+                    cleanedText[i] = cleanedText[i].replace("لأ","لا")
+                    cleanedText[i] = cleanedText[i].replace("ة", "ه")                   
+                    if cleanedText[i][0] =='ب':
+                        cleanedText[i] = cleanedText[i][1:]    
+                    if cleanedText[i][-1] == "ي":
+                        cleanedText[i] =  cleanedText[i][:-1] + "ى"
 
-                    # Rule 6
-                    elif len(text) == 5 and text[2] == 'ا':
-                        textL = list(text)
-                        textL.pop(2)
-                        new_text = ""
-                        for x in textL:
-                            new_text += x
-                        if new_text in symptomKeywordsDictionary.keys():
-                            cleanedText[j] = new_text
-
-                    # Rule 7
-                    elif len(text) == 4 and text[0] == 'ا':
-                        textL = list(text)
-                        textL.pop(0)
-                        new_text = ""
-                        for x in textL:
-                            new_text += x
-                        if new_text in symptomKeywordsDictionary.keys():
-                            cleanedText[j] = new_text
-
-                    # Rule 8
-                    elif len(text) == 5 and text[0] == 'ا' and text[4] == 'ة':
-                        textL = list(text)
-                        textL.pop(0)
-                        textL.pop(3)
-
-                        new_text = ""
-                        i = 0
-                        for x in textL:
-                            if i == 2:
-                                new_text += 'ا'
-                            new_text += x
-                            i += 1
-                        if new_text in symptomKeywordsDictionary.keys():
-                            cleanedText[j] = new_text
-
-                    # Rule 9
-                    elif len(text) == 5 and text[0] == 'ا' and text[3] == 'ا' and text[1] != 'ي':
-                        textL = list(text)
-                        textL.pop(0)
-                        textL.pop(2)
-
-                        new_text = ""
-                        for x in textL:
-                            new_text += x
-                        if new_text in symptomKeywordsDictionary.keys():
-                            cleanedText[j] = new_text
-
-                    # Rule 3
-                    elif len(text) > 3:
-                        textL = list(text)
-                        x = len(textL)
-                        if textL[x - 1] == 'ا' and textL[x - 2] == 'ي' and textL[x - 3] == 'ا':
-                            textL.pop(x - 1)
-                            textL.pop(x - 2)
-                            textL.pop(x - 3)
-                            textL.append('ي')
-                            textL.append('ة')
-                            new_text = ""
-                            for x in textL:
-                                new_text += x
-                            if new_text in symptomKeywordsDictionary.keys():
-                                cleanedText[j] = new_text
-                    j+=1
-
-            for i, item in enumerate (cleanedText):
-                cleanedText[i]=remove_prefix_al(cleanedText[i])
-                cleanedText[i] = cleanedText[i].replace("أ","ا")
-                cleanedText[i] = cleanedText[i].replace("إ","ا")
-                cleanedText[i] = cleanedText[i].replace("لأ","لا")
-                cleanedText[i] = cleanedText[i].replace("ة", "ه")                   
-                if cleanedText[i][0] =='ب':
-                    cleanedText[i] = cleanedText[i][1:]    
-                if cleanedText[i][-1] == "ي":
-                    cleanedText[i] =  cleanedText[i][:-1] + "ى"
-
-                cleanedText[i]=ar.strip_tashkeel(cleanedText[i])
-            
-            ####
-            splitted=cleanedText
-            done = False
-            i=0
-            while(i <= len(splitted)-1 ):                                   #----------
+                    cleanedText[i]=ar.strip_tashkeel(cleanedText[i])
+                
+                ####
+                splitted=cleanedText
                 done = False
-                item =splitted[i]
-                wrongWord=item
-                if item not in negations:
-                    if item in symptomKeywordsDictionary.keys():
-                        done =True
-                        if visited[symptomKeywordsDictionary[item]] == True:
+                i=0
+                while(i <= len(splitted)-1 ):                                   #----------
+                    done = False
+                    item =splitted[i]
+                    wrongWord=item
+                    if item not in negations:
+                        if item in symptomKeywordsDictionary.keys():
+                            done =True
+                            if visited[symptomKeywordsDictionary[item]] == True:
+                                i+=1
+                                continue
+                            visited[symptomKeywordsDictionary[item]] = True
+                            if i >= 1:
+                                last = splitted[i-1]
+                                if i > 1:
+                                    last2 = splitted[i-2]
+                                if last in negations or last2 in negations:
+                                    diagnosed[symptomKeywordsDictionary[item]] = False
+                                else:
+
+                                    diagnosed[symptomKeywordsDictionary[item]] = True
+                            else:
+                                diagnosed[symptomKeywordsDictionary[item]] = True
                             i+=1
                             continue
-                        visited[symptomKeywordsDictionary[item]] = True
-                        if i >= 1:
-                            last = splitted[i-1]
-                            if i > 1:
-                                last2 = splitted[i-2]
-                            if last in negations or last2 in negations:
-                                diagnosed[symptomKeywordsDictionary[item]] = False
-                            else:
+                        if i < len(splitted)-1 and done != True:
+                            temp = item+" "+splitted[i+1]
+                            wrongWord=temp
+                            if temp in symptomKeywordsDictionary.keys():
+                                i+=1                                    #-- in case of composite function doesn't take the next word
+                                done = True
 
-                                diagnosed[symptomKeywordsDictionary[item]] = True
-                        else:
-                            diagnosed[symptomKeywordsDictionary[item]] = True
-                        i+=1
-                        continue
-                    if i < len(splitted)-1 and done != True:
-                        temp = item+" "+splitted[i+1]
-                        wrongWord=temp
-                        if temp in symptomKeywordsDictionary.keys():
-                            i+=1                                    #-- in case of composite function doesn't take the next word
-                            done = True
+                                if visited[symptomKeywordsDictionary[temp]] == True:
+                                    i += 2
+                                    continue
+                                visited[symptomKeywordsDictionary[temp]] = True
 
-                            if visited[symptomKeywordsDictionary[temp]] == True:
-                                i += 2
-                                continue
-                            visited[symptomKeywordsDictionary[temp]] = True
-
-                            if i >= 1:
-                                last = splitted[i - 1]
-                                if i > 1:
-                                    last2 = splitted[i - 2]
-                                if last in negations or last2 in negations:
-                                    diagnosed[symptomKeywordsDictionary[temp]] = False
+                                if i >= 1:
+                                    last = splitted[i - 1]
+                                    if i > 1:
+                                        last2 = splitted[i - 2]
+                                    if last in negations or last2 in negations:
+                                        diagnosed[symptomKeywordsDictionary[temp]] = False
+                                    else:
+                                        diagnosed[symptomKeywordsDictionary[temp]] = True
                                 else:
                                     diagnosed[symptomKeywordsDictionary[temp]] = True
-                            else:
-                                diagnosed[symptomKeywordsDictionary[temp]] = True
-                            i+=1
-                            continue
-
-                    if i < len(splitted)-2 and done != True:
-                        temp2 = item+" "+splitted[i+1]+" "+splitted[i+2]
-                        wrongWord=temp2
-                        if temp2 in symptomKeywordsDictionary.keys():
-                            i+=2                                                        #-- //
-                            done = True
-
-                            if visited[symptomKeywordsDictionary[temp2]] == True:
-                                i += 3
+                                i+=1
                                 continue
 
-                            visited[symptomKeywordsDictionary[temp2]] = True
-                            if i >= 1:
-                                last = splitted[i - 1]
-                                if i > 1:
-                                    last2 = splitted[i - 2]
-                                if last in negations or last2 in negations:
-                                    diagnosed[symptomKeywordsDictionary[temp2]] = False
+                        if i < len(splitted)-2 and done != True:
+                            temp2 = item+" "+splitted[i+1]+" "+splitted[i+2]
+                            wrongWord=temp2
+                            if temp2 in symptomKeywordsDictionary.keys():
+                                i+=2                                                        #-- //
+                                done = True
+
+                                if visited[symptomKeywordsDictionary[temp2]] == True:
+                                    i += 3
+                                    continue
+
+                                visited[symptomKeywordsDictionary[temp2]] = True
+                                if i >= 1:
+                                    last = splitted[i - 1]
+                                    if i > 1:
+                                        last2 = splitted[i - 2]
+                                    if last in negations or last2 in negations:
+                                        diagnosed[symptomKeywordsDictionary[temp2]] = False
+                                    else:
+                                        diagnosed[symptomKeywordsDictionary[temp2]] = True
                                 else:
                                     diagnosed[symptomKeywordsDictionary[temp2]] = True
+                                i = i + 2
+                                continue
+
+                        if(done==False):
+                            distance = 10
+                            rightWord=""
+                            finalWord = ""
+                            for x in symptomKeywordsDictionary.keys():
+                                d = nltk.edit_distance(word, x)
+                                if d < distance:
+                                    distance = d
+                                    rightWord = x
+
+                            if distance < 2 :
+                                visited[symptomKeywordsDictionary[rightWord]] = True
+                                finalWord = rightWord
                             else:
-                                diagnosed[symptomKeywordsDictionary[temp2]] = True
-                            i = i + 2
-                            continue
+                                finalWord = 'x'
 
-                    if(done==False):
-                        distance = 10
-                        rightWord=""
-                        finalWord = ""
-                        for x in symptomKeywordsDictionary.keys():
-                            d = nltk.edit_distance(word, x)
-                            if d < distance:
-                                distance = d
-                                rightWord = x
-
-                        if distance < 2 :
-                            visited[symptomKeywordsDictionary[rightWord]] = True
-                            finalWord = rightWord
-                        else:
-                            finalWord = 'x'
-
-                        compositeCheck= finalWord.split()
-                        if(len(compositeCheck)==2):                                  #------- //
-                            i+=1
-                        elif(len(compositeCheck)==3):
-                            i+=2
-                        print(finalWord)
-                        if finalWord != "x":
-                            if i >= 1:
-                                last = splitted[i - 1]
-                                if i > 1:
-                                    last2 = splitted[i - 2]
-                                if last in negations or last2 in negations:
-                                    diagnosed[symptomKeywordsDictionary[finalWord]] = False
+                            compositeCheck= finalWord.split()
+                            if(len(compositeCheck)==2):                                  #------- //
+                                i+=1
+                            elif(len(compositeCheck)==3):
+                                i+=2
+                            print(finalWord)
+                            if finalWord != "x":
+                                if i >= 1:
+                                    last = splitted[i - 1]
+                                    if i > 1:
+                                        last2 = splitted[i - 2]
+                                    if last in negations or last2 in negations:
+                                        diagnosed[symptomKeywordsDictionary[finalWord]] = False
+                                    else:
+                                        diagnosed[symptomKeywordsDictionary[finalWord]] = True
                                 else:
                                     diagnosed[symptomKeywordsDictionary[finalWord]] = True
-                            else:
-                                diagnosed[symptomKeywordsDictionary[finalWord]] = True
-                        i += 1
-                else:
-                    i+=1
-                #########
-            # txtProcess(inp, symptomKeywordsDictionary, visited, diagnosed)
+                            i += 1
+                    else:
+                        i+=1
+                    #########
+                # txtProcess(inp, symptomKeywordsDictionary, visited, diagnosed)
 
             for i in symptomKeywordsDictionary.values():
                 if visited[i] == False:    
