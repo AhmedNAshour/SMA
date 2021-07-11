@@ -36,7 +36,7 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 chatIteration = 0
-previous = 'إرهاق'
+firstTime = True
 negations = ["بدون","لا"]
 stopWords = [ "صباح","مساءا","ليل","كثير","قليلا","امس","غدا","أمس","اليوم","قليل","كثيرا","ب","أبدا","ابدا","حاد","شديدة","شكرا","عفوا","انا","أنا", "و", "شعور", "لدي", "احيانا", "دائما", "عندى", "نعم", "لا", "فى", "في","حاسة" ,"اشعر","من" , "إلى" , "حتى" , "خلا" , "حاشا" , "عدا", "في" , "عن" , "على" , "مذ" , "منذ", "اعانى"]
 wb = xlrd.open_workbook('Symptoms.xls')
@@ -64,6 +64,14 @@ def hello():
 @app.route('/predict', methods=['POST'])
 def predict():
     lr = chef.load_model("model.pkl")
+    global firstTime
+    global previous
+    print(firstTime, flush=True)
+
+    if firstTime == True:
+        previous = 'حمي'
+        firstTime = False
+
     if lr:
         try:
             json = request.get_json()
@@ -74,7 +82,6 @@ def predict():
             global chatIteration
             global diagnosed
             global visited
-            global previous
             global symptomKeywordsDictionary
             cleanedText = nltk.word_tokenize(inp)
             print('previous ' + previous, flush=True)
@@ -88,7 +95,7 @@ def predict():
                 elif inp == "لا":
                     diagnosed[previous] = False
                     visited[previous] = True
-                
+
             if(visited[previous]==False):
                 ##########
                 last = " "
