@@ -15,7 +15,6 @@ from nltk.stem.isri import ISRIStemmer
 st = ISRIStemmer()
 import xlrd
 import nltk
-nltk.download('punkt')
 import pyarabic.araby as ar
 from nltk.stem.lancaster import LancasterStemmer
 stemmer = LancasterStemmer()
@@ -32,7 +31,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from chefboost import Chefboost as chef
-from flask import Flask, jsonify, request3
+from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 chatIteration = 0
@@ -76,7 +75,7 @@ def predict():
             global visited
             global previous
             global symptomKeywordsDictionary
-            cleanedText = inp.split()
+            cleanedText = nltk.word_tokenize(inp)
             if chatIteration > 0:
                 if inp == "نعم":
                     diagnosed[previous] = True
