@@ -77,6 +77,8 @@ def predict():
             global previous
             global symptomKeywordsDictionary
             cleanedText = nltk.word_tokenize(inp)
+            print('previous ' + previous, flush=True)
+
             if chatIteration > 0:
                 if inp == "نعم":
                     diagnosed[previous] = True
@@ -255,6 +257,7 @@ def predict():
                             else:
                                 diagnosed[symptomKeywordsDictionary[item]] = True
                             i+=1
+                            print(visited, flush=True)
                             continue
                         if i < len(splitted)-1 and done != True:
                             temp = item+" "+splitted[i+1]
