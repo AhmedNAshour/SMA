@@ -35,8 +35,6 @@ from chefboost import Chefboost as chef
 from flask import Flask, jsonify, request
 app = Flask(__name__)
 
-chatIteration = 0
-firstTime = True
 negations = ["بدون","لا"]
 stopWords = [ "صباح","مساءا","ليل","كثير","قليلا","امس","غدا","أمس","اليوم","قليل","كثيرا","ب","أبدا","ابدا","حاد","شديدة","شكرا","عفوا","انا","أنا", "و", "شعور", "لدي", "احيانا", "دائما", "عندى", "نعم", "لا", "فى", "في","حاسة" ,"اشعر","من" , "إلى" , "حتى" , "خلا" , "حاشا" , "عدا", "في" , "عن" , "على" , "مذ" , "منذ", "اعانى"]
 wb = xlrd.open_workbook('Symptoms.xls')
@@ -64,19 +62,14 @@ def hello():
 @app.route('/predict', methods=['POST'])
 def predict():
     lr = chef.load_model("model.pkl")
-    global firstTime
-    global previous
-    print(firstTime, flush=True)
-
-    if firstTime == True:
-        previous = 'حمي'
-        firstTime = False
-
     if lr:
         try:
             json = request.get_json()
             # model_columns = chef.load("model_cols.pkl")
+            chatIteration = json[0]['chatIteration']
+            previous = json[0]['previous']
             temp = json[0]['values']
+
             still = False
             inp = temp
             global chatIteration
@@ -359,16 +352,16 @@ def predict():
             for i in symptomKeywordsDictionary.values():
                 if visited[i] == False:    
                     previous = i
-                    return jsonify({'prediction': str("هل تشعر ب" + i)})
+                    return jsonify({'prediction': str("هل تشعر ب" + i) , 'chatIteration': chatIteration , 'previous': previous})
 
             prediction = chef.predict(lr, [diagnosed['حمي'], diagnosed['إرهاق'], diagnosed['سعال'], diagnosed['ضيق تنفس'], diagnosed['احتقان حلق'], diagnosed['آلام'], diagnosed['احتقان انف'], diagnosed['سيلان انف'], diagnosed['اسهال'],diagnosed['فقدان حاسة الشم و التذوق']])
 
             if prediction == "yes":
                 # diagnosed.clear()
                 # visited.clear()
-                return jsonify({'prediction': "تم تشخيصك بفيروس كورونا المستجد." , 'dict': diagnosed})
+                return jsonify({'prediction': "تم تشخيصك بفيروس كورونا المستجد." , 'dict': diagnosed , 'chatIteration': chatIteration , 'previous': previous})
             else:
-                return jsonify({'prediction': "لم يتم تشخيصك بفيروس كورونا المستجد." , 'dict': diagnosed})
+                return jsonify({'prediction': "لم يتم تشخيصك بفيروس كورونا المستجد." , 'dict': diagnosed, 'chatIteration': chatIteration , 'previous': previous})
 
             print("here:", prediction , flush=True)
         except:
