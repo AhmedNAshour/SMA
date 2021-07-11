@@ -83,6 +83,7 @@ def predict():
                 if inp == "نعم":
                     diagnosed[previous] = True
                     visited[previous] = True
+                    print(visited, flush=True)
                 elif inp == "لا":
                     diagnosed[previous] = False
                     visited[previous] = True
@@ -282,6 +283,7 @@ def predict():
                                 else:
                                     diagnosed[symptomKeywordsDictionary[temp]] = True
                                 i+=1
+                                print(visited, flush=True)
                                 continue
 
                         if i < len(splitted)-2 and done != True:
