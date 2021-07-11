@@ -36,7 +36,7 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 chatIteration = 0
-previous = 0
+previous = 'حمي'
 negations = ["بدون","لا"]
 stopWords = [ "صباح","مساءا","ليل","كثير","قليلا","امس","غدا","أمس","اليوم","قليل","كثيرا","ب","أبدا","ابدا","حاد","شديدة","شكرا","عفوا","انا","أنا", "و", "شعور", "لدي", "احيانا", "دائما", "عندى", "نعم", "لا", "فى", "في","حاسة" ,"اشعر","من" , "إلى" , "حتى" , "خلا" , "حاشا" , "عدا", "في" , "عن" , "على" , "مذ" , "منذ", "اعانى"]
 wb = xlrd.open_workbook('Symptoms.xls')
@@ -399,7 +399,7 @@ def resetData():
         global chatIteration
         global previous
         chatIteration = 0
-        previous = 0
+        previous = 'حمي'
         for i in symptomKeywordsDictionary.values():
             visited[i] = False
             diagnosed[i] = False
