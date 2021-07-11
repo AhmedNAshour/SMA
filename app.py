@@ -72,7 +72,6 @@ def predict():
 
             still = False
             inp = temp
-            global chatIteration
             global diagnosed
             global visited
             global symptomKeywordsDictionary
@@ -397,10 +396,6 @@ def resetData():
         global diagnosed
         global visited
         global symptomKeywordsDictionary
-        global chatIteration
-        global previous
-        chatIteration = 0
-        previous = 'إرهاق'
         for i in symptomKeywordsDictionary.values():
             visited[i] = False
             diagnosed[i] = False
